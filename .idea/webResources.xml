@@ -6,6 +6,8 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/.venv" />
+            <path value="file://$PROJECT_DIR$/tests" />
+            <path value="file://$PROJECT_DIR$/docs" />
           </resourceRoots>
         </entryData>
       </entry>
