@@ -39,6 +39,7 @@ def create(config_file=None):
     app.add_route('/zones/{name}/a_records/{record}', records.ARecordResource(config))
     return app
 
+
 app = create()
 
 if __name__ == '__main__':

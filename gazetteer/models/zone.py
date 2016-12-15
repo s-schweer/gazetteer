@@ -1,16 +1,16 @@
 __author__ = 'Stefan Schweer'
 
-import dns.query
-import dns.zone
 import json
 
-class DnsZone(object):
+import dns.query
+import dns.zone
 
+
+class DnsZone(object):
     def __init__(self, name=None, dns_server=None):
         self.name = name
         self.zone = self._domain_xfer(name, dns_server)
         self.a_records = self._parse_a_records(self.zone)
-
 
     def _domain_xfer(self, name, dns_server):
         try:
@@ -33,8 +33,8 @@ class DnsZone(object):
     def a_records_as_json(self):
         return json.dumps(self.a_records_as_dict())
 
-class ARecord(object):
 
+class ARecord(object):
     def __init__(self, name, ttl, address):
         self.name = name
         self.ttl = ttl
