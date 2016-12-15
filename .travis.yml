@@ -1,4 +1,16 @@
+sudo: required
+
 language: python
+
+services:
+  - docker
+
+before_install:
+  - docker build -t bind -f docker/bind/Dockerfile
+  - docker run bind -n nameserver
+  - docker inspecrt nameserver
+
+
 python:
   - "2.7"
   - "3.4"
