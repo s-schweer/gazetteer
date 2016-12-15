@@ -2,9 +2,10 @@ __author__ = 'Stefan Schweer'
 
 # Let's get this party started!
 import falcon
-import yaml
+import json
+from wsgiref import simple_server
 from gazetteer.config import YamlConfig
-#from gazetteer.resources import domains
+from gazetteer.resources import domains
 
 
 
@@ -19,7 +20,7 @@ class ConfigResource(object):
     def on_get(self, req, resp):
         """Handles GET requests"""
         resp.status = falcon.HTTP_200  # This is the default status
-        resp.body = yaml.dump(self.config.entries)
+        resp.body = json.dumps(self.config.entries)
 
 def create(config_file=None):
 
@@ -32,4 +33,13 @@ def create(config_file=None):
 
     # things will handle all requests to the '/things' URL path
     app.add_route('/config', config_resource)
+    app.add_route('/domains/{name}', domains.DomainResource(config))
     return app
+
+
+
+app = create()
+
+if __name__ == '__main__':
+    httpd = simple_server.make_server('127.0.0.1', 8000, app)
+    httpd.serve_forever()

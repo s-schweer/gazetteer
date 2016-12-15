@@ -9,7 +9,9 @@ class YamlConfig(object):
                 entries = yaml.load(f)
             f.close()
         except:
-            entries = dict(foo='bar')
+            entries = dict(foo='bar',
+                           dns_server='172.17.0.2',
+                           domains=['example.net'])
         finally:
             self.__dict__.update(entries)
             self.entries = entries
