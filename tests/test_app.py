@@ -23,18 +23,18 @@ def test_get_config(client):
 
 
 def test_get_domains(client):
-    result = client.simulate_get('/domains')
+    result = client.simulate_get('/zones')
     domains = ['example.net']
     assert result.json == domains
 
 
 def test_head_domain_exists(client):
-    result = client.simulate_head('/domains/example.net')
+    result = client.simulate_head('/zones/example.net')
     assert result.status == '200 OK'
 
 
 def test_head_domain_not_exists(client):
-    result = client.simulate_head('/domains/example.com')
+    result = client.simulate_head('/zones/example.com')
     assert result.status == '404 Not Found'
 
 
@@ -44,5 +44,24 @@ def test_get_domain(client):
            "ns1": "ns1 86400 IN A 192.168.0.1", "bill": "bill 86400 IN A 192.168.0.3",
            "fred": "fred 86400 IN A 192.168.0.4"}
 
-    result = client.simulate_get('/domains/example.net')
+    result = client.simulate_get('/zones/example.net')
+    assert result.json == doc
+
+
+def test_get_a_records(client):
+    doc = {'bill': {'address': '192.168.0.3', 'ttl': '86400'}, 'fred': {'address': '192.168.0.4', 'ttl': '86400'}, 'ns1': {'address': '192.168.0.1', 'ttl': '86400'}, 'www': {'address': '192.168.0.2', 'ttl': '86400'}}
+    result = client.simulate_get('/zones/example.net/a_records')
+    assert result.json == doc
+
+def test_head_existing_a_record(client):
+    result = client.simulate_head('/zones/example.net/a_records/bill')
+    assert result.status == '200 OK'
+
+def test_head_non_existing_a_record(client):
+    result = client.simulate_head('/zones/example.net/a_records/alter')
+    assert result.status == '404 Not Found'
+
+def test_get_existing_a_record(client):
+    doc = {'bill': {'address': '192.168.0.3', 'ttl': '86400'}}
+    result = client.simulate_get('/zones/example.net/a_records/bill')
     assert result.json == doc

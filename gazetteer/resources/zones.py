@@ -9,7 +9,7 @@ import falcon
 logger = logging.getLogger(__name__)
 
 
-class DomainCollectionResource(object):
+class ZoneCollectionResource(object):
     """
     Return list of domains
     """
@@ -23,7 +23,7 @@ class DomainCollectionResource(object):
         resp.status = falcon.HTTP_200
 
 
-class DomainResource(object):
+class ZoneResource(object):
     """
     Returns domain object
     """
@@ -39,7 +39,7 @@ class DomainResource(object):
                 dns.zone.from_xfr(dns.query.xfr(self.config.dns_server, name))
                 resp.status = falcon.HTTP_200
             else:
-                raise Exception('not configured for domain {}'.format(name))
+                raise Exception('not configured for zone {}'.format(name))
         except:
             resp.status = falcon.HTTP_404
 

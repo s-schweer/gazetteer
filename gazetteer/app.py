@@ -7,7 +7,7 @@ from wsgiref import simple_server
 import falcon
 
 from gazetteer.config import YamlConfig
-from gazetteer.resources import domains
+from gazetteer.resources import zones, records
 
 
 # Falcon follows the REST architectural style, meaning (among
@@ -33,10 +33,11 @@ def create(config_file=None):
 
     # things will handle all requests to the '/things' URL path
     app.add_route('/config', config_resource)
-    app.add_route('/domains', domains.DomainCollectionResource(config))
-    app.add_route('/domains/{name}', domains.DomainResource(config))
+    app.add_route('/zones', zones.ZoneCollectionResource(config))
+    app.add_route('/zones/{name}', zones.ZoneResource(config))
+    app.add_route('/zones/{name}/a_records', records.ARecordCollectionResource(config))
+    app.add_route('/zones/{name}/a_records/{record}', records.ARecordResource(config))
     return app
-
 
 app = create()
 
