@@ -1,19 +1,19 @@
 __author__ = 'Stefan Schweer'
 
 # Let's get this party started!
-import falcon
 import json
 from wsgiref import simple_server
+
+import falcon
+
 from gazetteer.config import YamlConfig
 from gazetteer.resources import domains
-
 
 
 # Falcon follows the REST architectural style, meaning (among
 # other things) that you think in terms of resources and state
 # transitions, which map to HTTP verbs.
 class ConfigResource(object):
-
     def __init__(self, config):
         self.config = config
 
@@ -22,8 +22,8 @@ class ConfigResource(object):
         resp.status = falcon.HTTP_200  # This is the default status
         resp.body = json.dumps(self.config.entries)
 
-def create(config_file=None):
 
+def create(config_file=None):
     config = YamlConfig(config_file)
     # falcon.API instances are callable WSGI apps
     app = falcon.API()
@@ -36,7 +36,6 @@ def create(config_file=None):
     app.add_route('/domains', domains.DomainCollectionResource(config))
     app.add_route('/domains/{name}', domains.DomainResource(config))
     return app
-
 
 
 app = create()

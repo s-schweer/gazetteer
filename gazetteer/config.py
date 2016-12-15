@@ -2,6 +2,7 @@ __author__ = 'Stefan Schweer'
 
 import yaml
 
+
 class YamlConfig(object):
     def __init__(self, config='gazetteer.yml'):
         try:
@@ -15,4 +16,3 @@ class YamlConfig(object):
         finally:
             self.__dict__.update(entries)
             self.entries = entries
-

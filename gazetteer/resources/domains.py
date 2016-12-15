@@ -1,11 +1,13 @@
 __author__ = 'Stefan Schweer'
-import dns.query
-import dns.zone
 import json
-import falcon
 import logging
 
+import dns.query
+import dns.zone
+import falcon
+
 logger = logging.getLogger(__name__)
+
 
 class DomainCollectionResource(object):
     """
@@ -19,6 +21,7 @@ class DomainCollectionResource(object):
         """Handles GET requests"""
         resp.body = json.dumps(self.config.domains)
         resp.status = falcon.HTTP_200
+
 
 class DomainResource(object):
     """
@@ -55,4 +58,3 @@ class DomainResource(object):
         except Exception as e:
             logger.error(e)
             resp.status = falcon.HTTP_404
-
