@@ -7,8 +7,8 @@ services:
 
 before_install:
   - docker build -t bind docker/bind
-  - docker run bind -n nameserver
-  - docker inspect nameserver
+  - docker run --name nameserver bind
+  - docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' nameserver
 
 
 python:
