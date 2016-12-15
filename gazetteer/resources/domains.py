@@ -7,7 +7,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-#class DomainCollectionResource(object):
+class DomainCollectionResource(object):
+
+    def __init__(self, config):
+        self.config = config
+
+    def on_get(self, req, resp):
+        """Handles GET requests"""
+        resp.body = json.dumps(self.config.domains)
+        resp.status = falcon.HTTP_200
 
 class DomainResource(object):
 

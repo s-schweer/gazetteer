@@ -21,6 +21,11 @@ def test_get_config(client):
     result = client.simulate_get('/config')
     assert result.json == doc
 
+def test_get_domains(client):
+    result = client.simulate_get('/domains')
+    domains = ['example.net']
+    assert result.json == domains
+
 def test_head_domain_exists(client):
     result = client.simulate_head('/domains/example.net')
     assert result.status == '200 OK'

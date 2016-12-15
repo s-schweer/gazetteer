@@ -33,6 +33,7 @@ def create(config_file=None):
 
     # things will handle all requests to the '/things' URL path
     app.add_route('/config', config_resource)
+    app.add_route('/domains', domains.DomainCollectionResource(config))
     app.add_route('/domains/{name}', domains.DomainResource(config))
     return app
 
