@@ -6,9 +6,9 @@ services:
   - docker
 
 before_install:
-  - docker build -t bind -f docker/bind/Dockerfile
+  - docker build -t bind docker/bind
   - docker run bind -n nameserver
-  - docker inspecrt nameserver
+  - docker inspect nameserver
 
 
 python:
