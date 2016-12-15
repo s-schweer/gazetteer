@@ -8,6 +8,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 class DomainCollectionResource(object):
+    """
+    Return list of domains
+    """
 
     def __init__(self, config):
         self.config = config
@@ -18,6 +21,9 @@ class DomainCollectionResource(object):
         resp.status = falcon.HTTP_200
 
 class DomainResource(object):
+    """
+    Returns domain object
+    """
 
     def __init__(self, config):
         self.config = config
@@ -35,7 +41,10 @@ class DomainResource(object):
             resp.status = falcon.HTTP_404
 
     def on_get(self, req, resp, name):
-        """Handles GET requests"""
+        """
+        Handles GET requests
+        :returns json domain object
+        """
         try:
             z = dns.zone.from_xfr(dns.query.xfr(self.config.dns_server, name))
             resp.status = falcon.HTTP_200
