@@ -1,13 +1,14 @@
-__author__ = 'Stefan Schweer'
-
 # Let's get this party started!
 import json
-from wsgiref import simple_server
-
 import falcon
+import logging
 
 from gazetteer.config import YamlConfig
 from gazetteer.resources import zones, records
+from gazetteer.middlewares.json_handling import JSONTranslator, RequireJSON
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # Falcon follows the REST architectural style, meaning (among
@@ -23,10 +24,10 @@ class ConfigResource(object):
         resp.body = json.dumps(self.config.entries)
 
 
-def create(config_file=None):
-    config = YamlConfig(config_file)
+def create(config=None):
+    config = YamlConfig(config)
     # falcon.API instances are callable WSGI apps
-    app = falcon.API()
+    app = falcon.API(middleware=[JSONTranslator(),RequireJSON()])
 
     # Resources are represented by long-lived class instances
     config_resource = ConfigResource(config)
@@ -34,14 +35,7 @@ def create(config_file=None):
     # things will handle all requests to the '/things' URL path
     app.add_route('/config', config_resource)
     app.add_route('/zones', zones.ZoneCollectionResource(config))
-    app.add_route('/zones/{name}', zones.ZoneResource(config))
-    app.add_route('/zones/{name}/a_records', records.ARecordCollectionResource(config))
-    app.add_route('/zones/{name}/a_records/{record}', records.ARecordResource(config))
+    app.add_route('/zones/{zone}', zones.ZoneResource(config))
+    app.add_route('/zones/{zone}/a_records', records.ARecordCollectionResource(config))
+    app.add_route('/zones/{zone}/a_records/{record}', records.ARecordResource(config))
     return app
-
-
-app = create()
-
-if __name__ == '__main__':
-    httpd = simple_server.make_server('127.0.0.1', 8000, app)
-    httpd.serve_forever()

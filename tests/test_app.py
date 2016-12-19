@@ -1,8 +1,8 @@
-__author__ = 'Stefan Schweer'
 import pytest
+import json
 from falcon import testing
 
-from gazetteer import app
+from gazetteer import api
 
 
 @pytest.fixture(scope='module')
@@ -10,7 +10,10 @@ def client():
     # Assume the hypothetical `myapp` package has a
     # function called `create()` to initialize and
     # return a `falcon.API` instance.
-    return testing.TestClient(app.create())
+    config = dict(foo='bar',
+               dns_server='172.17.0.2',
+               domains=['example.net'])
+    return testing.TestClient(api.create(config=config))
 
 
 def test_get_config(client):
@@ -49,8 +52,8 @@ def test_get_domain(client):
 
 
 def test_get_a_records(client):
-    doc = {'bill': {'address': '192.168.0.3', 'ttl': '86400'}, 'fred': {'address': '192.168.0.4', 'ttl': '86400'},
-           'ns1': {'address': '192.168.0.1', 'ttl': '86400'}, 'www': {'address': '192.168.0.2', 'ttl': '86400'}}
+    doc = [{'name': 'bill', 'address': '192.168.0.3', 'ttl': '86400'}, {'name': 'fred', 'address': '192.168.0.4', 'ttl': '86400'},
+           {'name': 'ns1', 'address': '192.168.0.1', 'ttl': '86400'}, {'name': 'www', 'address': '192.168.0.2', 'ttl': '86400'}]
     result = client.simulate_get('/zones/example.net/a_records')
     assert result.json == doc
 
@@ -66,6 +69,12 @@ def test_head_non_existing_a_record(client):
 
 
 def test_get_existing_a_record(client):
-    doc = {'bill': {'address': '192.168.0.3', 'ttl': '86400'}}
+    doc = {'name': 'bill', 'address': '192.168.0.3', 'ttl': '86400'}
     result = client.simulate_get('/zones/example.net/a_records/bill')
     assert result.json == doc
+
+def test_put_a_record(client):
+    a_record = json.dumps({'name': 'horst', 'address': '192.168.0.15', 'ttl': 86400})
+    headers = {'Content-Type': 'application/json'}
+    result = client.simulate_put('/zones/example.net/a_records', body=a_record, headers=headers)
+    assert result.headers.get('location') == '/zones/example.net/a_records/horst'

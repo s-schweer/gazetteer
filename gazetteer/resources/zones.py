@@ -1,4 +1,3 @@
-__author__ = 'Stefan Schweer'
 import json
 import logging
 
@@ -6,6 +5,7 @@ import dns.query
 import dns.zone
 import falcon
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
@@ -31,25 +31,25 @@ class ZoneResource(object):
     def __init__(self, config):
         self.config = config
 
-    def on_head(self, req, resp, name):
+    def on_head(self, req, resp, zone):
         """Handles HEAD requests"""
 
         try:
-            if name in self.config.domains:
-                dns.zone.from_xfr(dns.query.xfr(self.config.dns_server, name))
+            if zone in self.config.domains:
+                dns.zone.from_xfr(dns.query.xfr(self.config.dns_server, zone))
                 resp.status = falcon.HTTP_200
             else:
-                raise Exception('not configured for zone {}'.format(name))
+                raise Exception('not configured for zone {}'.format(zone))
         except:
             resp.status = falcon.HTTP_404
 
-    def on_get(self, req, resp, name):
+    def on_get(self, req, resp, zone):
         """
         Handles GET requests
         :returns json domain object
         """
         try:
-            z = dns.zone.from_xfr(dns.query.xfr(self.config.dns_server, name))
+            z = dns.zone.from_xfr(dns.query.xfr(self.config.dns_server, zone))
             resp.status = falcon.HTTP_200
             entries = {}
             for n in sorted(z.nodes.keys()):
