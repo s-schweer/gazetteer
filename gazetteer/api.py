@@ -36,6 +36,6 @@ def create(config=None):
     app.add_route('/config', config_resource)
     app.add_route('/zones', zones.ZoneCollectionResource(config))
     app.add_route('/zones/{zone}', zones.ZoneResource(config))
-    app.add_route('/zones/{zone}/a_records', records.ARecordCollectionResource(config))
-    app.add_route('/zones/{zone}/a_records/{record}', records.ARecordResource(config))
+    app.add_route('/zones/{zone}/records', records.DnsRecordCollectionResource(config))
+    app.add_route('/zones/{zone}/records/{record}', records.DnsRecordResource(config))
     return app

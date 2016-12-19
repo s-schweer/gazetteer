@@ -14,6 +14,7 @@ class DnsZone(object):
         self.name = name
         self.zone = self._domain_xfer(name, dns_server)
         self.a_records = self._parse_a_records(self.zone)
+        self.cname_records = self._parse_cname_records(self.zone)
         self.dns_server = dns_server
 
     def _domain_xfer(self, name, dns_server):
@@ -25,58 +26,114 @@ class DnsZone(object):
     def _parse_a_records(self, zone):
         a_records = []
         for (name, ttl, rdata) in zone.iterate_rdatas('A'):
-            a_records.append(ARecord(str(name), str(ttl), str(rdata)))
+            a_records.append(DnsRecord(str(name), str(ttl), str(rdata)))
         return a_records
 
-    def a_records_as_dict(self):
-        records = []
+    def _parse_cname_records(self, zone):
+        cnames = []
+        for (name, ttl, rdata) in zone.iterate_rdatas('CNAME'):
+            cnames.append(DnsRecord(str(name), str(ttl), str(rdata)))
+        return cnames
+
+    def as_dict(self):
+        a_records = []
         for record in self.a_records:
-            records.append(dict(name=record.name, ttl=record.ttl, address=record.address))
+            a_records.append(dict(name=record.name, ttl=record.ttl, address=record.address))
+        cname_records = []
+        for record in self.cname_records:
+            cname_records.append(dict(name=record.name, ttl=record.ttl, address=record.address))
+        records = dict(a_records=a_records, cname_records=cname_records)
         return records
 
-    def a_records_as_json(self):
-        return json.dumps(self.a_records_as_dict())
+    def as_json(self):
+        return json.dumps(self.as_dict())
 
-    def add_a_record(self, doc):
+    def add(self, doc):
         name = doc.get('name')
         ttl = doc.get('ttl')
         address = doc.get('address')
+        record_type = doc.get('record_type')
+        if record_type == 'A':
+            rdtype = dns.rdatatype.A
+        elif record_type == 'CNAME':
+            rdtype = dns.rdatatype.CNAME
         try:
-            a_record = ARecord(name, ttl, address)
+            a_record = DnsRecord(name, ttl, address)
             update = dns.update.Update(self.name)
             update.absent(name)
-            update.add(name, ttl, dns.rdatatype.A, address)
-            result = dns.query.tcp(update, self.dns_server)
-            logger.info('creating a record for {} succeeded'.format(name))
+            update.add(name, ttl, rdtype, address)
+            dns.query.tcp(update, self.dns_server)
             self.a_records.append(a_record)
+            return name
         except Exception as e:
-            logger.error('adding record for {} failed: {}'.format(name, str(e)))
             raise Exception(e)
-        return name
 
-    def a_record_exists(self, name):
+
+    def exists(self, name):
         for a_record in self.a_records:
             if a_record.name == name:
                 return True
-        return False
+            for cname_record in self.cname_records:
+                if cname_record.name == name:
+                    return True
 
-    def get_a_record(self, name):
-        if self.a_record_exists(name):
+    def get(self, name):
+        if self.exists(name):
             for record in self.a_records:
                 if record.name == name:
-                    return record.as_json()
+                    return record
+            for record in self.cname_records:
+                if record.name == name:
+                    return record
         else:
             return None
 
+    def modify(self, name, dict):
+        dns_record = self.get(name)
+        ttl = dict.get('ttl', dns_record.ttl)
+        address = dict.get('address', dns_record.address)
+        record_type = dict.get('record_type', dns_record.address)
+        if record_type == 'A':
+            rdtype = dns.rdatatype.A
+        elif record_type == 'CNAME':
+            rdtype = dns.rdatatype.CNAME
+        try:
+            dns_record.ttl = ttl
+            dns_record.address = address
+            update = dns.update.Update(self.name)
+            update.present(name)
+            update.replace(name, ttl, rdtype, address)
+            dns.query.tcp(update, self.dns_server)
+            return name
+        except Exception as e:
+            raise Exception(e)
+        return name
 
-class ARecord(object):
-    def __init__(self, name, ttl, address):
+    def delete(self, name):
+        record = self.get(name)
+        try:
+            update = dns.update.Update(self.name)
+            update.present(name)
+            update.delete(name)
+            dns.query.tcp(update, self.dns_server)
+            if record.record_type == 'A':
+                self.a_records.remove(record)
+            elif record.record_type == 'CNAME':
+                self.cname_records.remove(record)
+            return True
+        except Exception as e:
+            raise Exception(e)
+
+
+class DnsRecord(object):
+    def __init__(self, name, ttl, address, record_type='A'):
         self.name = name
         self.ttl = ttl
         self.address = address
+        self.record_type = record_type
 
     def as_dict(self):
-        return dict(name=self.name, ttl=self.ttl, address=self.address)
+        return dict(name=self.name, ttl=self.ttl, address=self.address, record_type=self.record_type)
 
     def as_json(self):
         return json.dumps(self.as_dict())
