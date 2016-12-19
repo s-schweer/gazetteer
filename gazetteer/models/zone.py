@@ -47,7 +47,7 @@ class DnsZone(object):
             update.absent(name)
             update.add(name, ttl, dns.rdatatype.A, address)
             result = dns.query.tcp(update, self.dns_server)
-            logger.info('creating a record for {} returned: {}'.format(name, result))
+            logger.info('creating a record for {} succeeded'.format(name))
             self.a_records.append(a_record)
         except Exception as e:
             logger.error('adding record for {} failed: {}'.format(name, str(e)))

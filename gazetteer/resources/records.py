@@ -44,8 +44,8 @@ class ARecordCollectionResource(object):
         try:
             a_record = req.context['doc']
             z = self._get_zone(zone)
-            logger.info('adding a record: {}'.format(req.context['doc']))
             record_name = z.add_a_record(a_record)
+            logger.info('adding a record for {} succeeded'.format(record_name))
         except KeyError:
             raise falcon.HTTPBadRequest(
                 'Missing A-record',
