@@ -1,9 +1,6 @@
 gazetteer package
 =================
 
-.. image:: https://travis-ci.org/s-schweer/gazetteer.svg?branch=master
-    :target: https://travis-ci.org/s-schweer/gazetteer
-
 Subpackages
 -----------
 

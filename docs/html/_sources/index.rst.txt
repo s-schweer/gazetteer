@@ -12,6 +12,8 @@ Welcome to gazetteer's documentation!
 
    gazetteer
 
+.. image:: https://travis-ci.org/s-schweer/gazetteer.svg?branch=master
+    :target: https://travis-ci.org/s-schweer/gazetteer
 
 Indices and tables
 ==================
