@@ -52,10 +52,10 @@ def test_get_domain(client):
 
 
 def test_get_a_records(client):
-    doc = [{u'name': u'bill', u'address': u'192.168.0.3', u'ttl': u'86400'}, {u'name': u'fred', u'address': u'192.168.0.4', u'ttl': u'86400'},
-           {u'name': u'ns1', u'address': u'192.168.0.1', u'ttl': u'86400'}, {u'name': u'www', u'address': u'192.168.0.2', u'ttl': u'86400'}]
+    doc = json.dumps([{u'name': u'bill', u'address': u'192.168.0.3', u'ttl': u'86400'}, {u'name': u'fred', u'address': u'192.168.0.4', u'ttl': u'86400'},
+           {u'name': u'ns1', u'address': u'192.168.0.1', u'ttl': u'86400'}, {u'name': u'www', u'address': u'192.168.0.2', u'ttl': u'86400'}])
     result = client.simulate_get('/zones/example.net/a_records')
-    assert result.json == doc
+    assert result.text == doc
 
 
 def test_head_existing_a_record(client):
