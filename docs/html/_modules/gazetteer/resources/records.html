@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gazetteer.resources.records &#8212; Gazetteer 0.1.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-3.3.6/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-3.3.6/css/bootstrap-theme.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          Gazetteer</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"><p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gazetteer.html">gazetteer package</a></li>
+</ul>
+</ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+              
+                
+              
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for gazetteer.resources.records</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">falcon</span>
+
+<span class="kn">from</span> <span class="nn">gazetteer.models.zone</span> <span class="k">import</span> <span class="n">DnsZone</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="max_body"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.max_body">[docs]</a><span class="k">def</span> <span class="nf">max_body</span><span class="p">(</span><span class="n">limit</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">hook</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">content_length</span>
+        <span class="k">if</span> <span class="n">length</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">length</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The size of the request is too large. The body must not &#39;</span>
+                   <span class="s1">&#39;exceed &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; bytes in length.&#39;</span><span class="p">)</span>
+
+            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPRequestEntityTooLarge</span><span class="p">(</span>
+                <span class="s1">&#39;Request body is too large&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hook</span></div>
+
+<div class="viewcode-block" id="DnsRecordCollectionResource"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordCollectionResource">[docs]</a><span class="k">class</span> <span class="nc">DnsRecordCollectionResource</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return list of domains</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+    <span class="k">def</span> <span class="nf">_get_zone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DnsZone</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dns_server</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DnsRecordCollectionResource.on_get"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordCollectionResource.on_get">[docs]</a>    <span class="k">def</span> <span class="nf">on_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handles GET requests&quot;&quot;&quot;</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_zone</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">as_json</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">as_json</span><span class="p">())</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_200</span></div>
+
+    <span class="nd">@falcon</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="n">max_body</span><span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))</span>
+<div class="viewcode-block" id="DnsRecordCollectionResource.on_post"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordCollectionResource.on_post">[docs]</a>    <span class="k">def</span> <span class="nf">on_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;doc&#39;</span><span class="p">]</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_zone</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+            <span class="n">record_name</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;adding a record for </span><span class="si">{}</span><span class="s1"> succeeded&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record_name</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPBadRequest</span><span class="p">(</span>
+                <span class="s1">&#39;Missing A-record&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;An A-record must be submitted in the request body.&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_500</span>
+
+        <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_201</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;/zones/</span><span class="si">%s</span><span class="s1">/records/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">zone</span><span class="p">,</span> <span class="n">record_name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DnsRecordCollectionResource.on_put"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordCollectionResource.on_put">[docs]</a>    <span class="k">def</span> <span class="nf">on_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">):</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span></div>
+
+<div class="viewcode-block" id="DnsRecordCollectionResource.on_patch"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordCollectionResource.on_patch">[docs]</a>    <span class="k">def</span> <span class="nf">on_patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">):</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span></div>
+
+<div class="viewcode-block" id="DnsRecordCollectionResource.on_delete"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordCollectionResource.on_delete">[docs]</a>    <span class="k">def</span> <span class="nf">on_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">):</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span></div></div>
+
+<div class="viewcode-block" id="DnsRecordResource"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordResource">[docs]</a><span class="k">class</span> <span class="nc">DnsRecordResource</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Handles DNS-Record objects</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+    <span class="k">def</span> <span class="nf">_get_zone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">DnsZone</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">dns_server</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DnsRecordResource.on_head"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordResource.on_head">[docs]</a>    <span class="k">def</span> <span class="nf">on_head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handles HEAD requests&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_zone</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_200</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_500</span></div>
+
+
+    <span class="nd">@falcon</span><span class="o">.</span><span class="n">before</span><span class="p">(</span><span class="n">max_body</span><span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))</span>
+<div class="viewcode-block" id="DnsRecordResource.on_put"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordResource.on_put">[docs]</a>    <span class="k">def</span> <span class="nf">on_put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_zone</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+            <span class="n">record_dict</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="s1">&#39;doc&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
+                <span class="n">record_name</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">modify</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">record_dict</span><span class="p">)</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_204</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="s1">&#39;/zones/</span><span class="si">%s</span><span class="s1">/records/</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">zone</span><span class="p">,</span> <span class="n">record_name</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">record_name</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">record_dict</span><span class="p">)</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_201</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;modifying a record </span><span class="si">{}</span><span class="s1"> succeeded&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record_name</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPBadRequest</span><span class="p">(</span>
+                <span class="s1">&#39;Missing A-record&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;An A-record must be submitted in the request body.&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_500</span></div>
+
+
+
+<div class="viewcode-block" id="DnsRecordResource.on_get"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordResource.on_get">[docs]</a>    <span class="k">def</span> <span class="nf">on_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handles GET requests</span>
+<span class="sd">        :returns json domain object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_zone</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">entry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_200</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">as_json</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_500</span></div>
+
+<div class="viewcode-block" id="DnsRecordResource.on_patch"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordResource.on_patch">[docs]</a>    <span class="k">def</span> <span class="nf">on_patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span></div>
+
+<div class="viewcode-block" id="DnsRecordResource.on_post"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordResource.on_post">[docs]</a>    <span class="k">def</span> <span class="nf">on_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_zone</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_409</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span></div>
+
+<div class="viewcode-block" id="DnsRecordResource.on_delete"><a class="viewcode-back" href="../../../gazetteer.resources.html#gazetteer.resources.records.DnsRecordResource.on_delete">[docs]</a>    <span class="k">def</span> <span class="nf">on_delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">req</span><span class="p">,</span> <span class="n">resp</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="n">record</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_zone</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">record</span><span class="p">):</span>
+                <span class="n">z</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_200</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">resp</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTP_404</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">falcon</span><span class="o">.</span><span class="n">HTTPBadRequest</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2016, Stefan Schweer.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.1.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
