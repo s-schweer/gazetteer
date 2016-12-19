@@ -26,13 +26,13 @@ class DnsZone(object):
     def _parse_a_records(self, zone):
         a_records = []
         for (name, ttl, rdata) in zone.iterate_rdatas('A'):
-            a_records.append(DnsRecord(str(name), str(ttl), str(rdata)))
+            a_records.append(DnsRecord(str(name), str(ttl), str(rdata), record_type='A'))
         return a_records
 
     def _parse_cname_records(self, zone):
         cnames = []
         for (name, ttl, rdata) in zone.iterate_rdatas('CNAME'):
-            cnames.append(DnsRecord(str(name), str(ttl), str(rdata)))
+            cnames.append(DnsRecord(str(name), str(ttl), str(rdata), record_type='CNAME'))
         return cnames
 
     def as_dict(self):
@@ -58,12 +58,15 @@ class DnsZone(object):
         elif record_type == 'CNAME':
             rdtype = dns.rdatatype.CNAME
         try:
-            a_record = DnsRecord(name, ttl, address)
+            record = DnsRecord(name, ttl, address)
             update = dns.update.Update(self.name)
             update.absent(name)
             update.add(name, ttl, rdtype, address)
             dns.query.tcp(update, self.dns_server)
-            self.a_records.append(a_record)
+            if record_type == 'A':
+                self.a_records.append(record)
+            elif record_type == 'CNAME':
+                self.cnames_records.append(record)
             return name
         except Exception as e:
             raise Exception(e)
@@ -88,11 +91,12 @@ class DnsZone(object):
         else:
             return None
 
-    def modify(self, name, dict):
+    def modify(self, name, data):
         dns_record = self.get(name)
-        ttl = dict.get('ttl', dns_record.ttl)
-        address = dict.get('address', dns_record.address)
-        record_type = dict.get('record_type', dns_record.address)
+        ttl = data.get('ttl', dns_record.ttl)
+        address = data.get('address', dns_record.address)
+        old_record_type = dns_record.record_type
+        record_type = data.get('record_type', dns_record.record_type)
         if record_type == 'A':
             rdtype = dns.rdatatype.A
         elif record_type == 'CNAME':
@@ -102,7 +106,11 @@ class DnsZone(object):
             dns_record.address = address
             update = dns.update.Update(self.name)
             update.present(name)
-            update.replace(name, ttl, rdtype, address)
+            if old_record_type == record_type:
+                update.replace(name, ttl, rdtype, address)
+            else:
+                update.delete(name)
+                update.add(name, ttl, rdtype, address)
             dns.query.tcp(update, self.dns_server)
             return name
         except Exception as e:

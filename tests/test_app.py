@@ -120,6 +120,8 @@ def test_get_a_records_after_manipulation(client):
     assert result.json == doc
 
 
-def test_delete_existing_a_record_2(client):
-    result = client.simulate_delete('/zones/example.net/records/horst')
-    assert result.status == '200 OK'
+def test_change_existing_a_record_to_cname(client):
+    record = json.dumps({'name': 'horst', 'address': 'bill', 'ttl': 86400, 'record_type': 'CNAME'})
+    headers = {'Content-Type': 'application/json'}
+    result = client.simulate_put('/zones/example.net/records/horst', body=record, headers=headers)
+    assert result.status == '204 No Content'
