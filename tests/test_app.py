@@ -69,7 +69,7 @@ def test_head_non_existing_a_record(client):
 
 
 def test_get_existing_a_record(client):
-    doc = {'address': '192.168.0.3', 'name': 'bill', 'ttl': '86400'}
+    doc = {u'address': u'192.168.0.3', u'name': u'bill', u'ttl': u'86400'}
     result = client.simulate_get('/zones/example.net/a_records/bill')
     assert result.json == doc
 
